@@ -6,7 +6,7 @@ You can upload ovpn files as attachments.
 
 OpenVPN requires elevated privileges
 To avoid any security issues by elevating this script I used:
-```sh
+```bash
 sudo chown root:root /usr/sbin/openvpn
 sudo chmod 4775 /usr/sbin/openvpn
 ```
