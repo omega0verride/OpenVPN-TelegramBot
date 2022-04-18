@@ -30,6 +30,7 @@ def validate_user(func: callable):
 
 Commands:
 
+```
 /start /status /s           -> get current machine state
 /connect /c                 -> connect using default ovpn file
 /connect <filename>         -> connect specifying ovpn fle
@@ -40,3 +41,4 @@ Commands:
 /list /ls /l                -> list all .ovpn files on the dir, you can upload others as attachments
 /setdefault /sd <filename>  -> set default ovpn file
 /default /df                -> check default ovpn file
+```
