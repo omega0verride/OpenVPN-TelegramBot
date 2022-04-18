@@ -16,7 +16,7 @@ import logging
 import re
 import time
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, JobQueue
 import psutil
 import glob
 import subprocess
@@ -109,7 +109,7 @@ def help(update, context: CallbackContext):
 # sudo chmod 4775 /usr/sbin/openvpn
 # this will make openvpn run as root by default
 @validate_user
-def connect(update, context: CallbackContext, job_queue):
+def connect(update, context: CallbackContext, job_queue: JobQueue):
     cmd = ['openvpn']
     filename = None
     params = str(update.message.text).split(" ")
@@ -145,8 +145,8 @@ def connect(update, context: CallbackContext, job_queue):
     kill_processes()
     t = threading.Thread(target=run, args=(cmd, update, context))
     t.start()
-
-    schedule(update, context, job_queue, function=check_status, interval=3, count=4)
+    if proc is None or proc.returncode == 0 or proc.returncode == -9 or proc.returncode is None:  # 0 -> finished successfully; -9 killed by main
+        schedule(update, context, job_queue, function=check_status, interval=3, count=4)
 
 
 def run(cmd, update, context: CallbackContext):
@@ -176,8 +176,16 @@ def schedule(update, context: CallbackContext, job_queue, function: callable, in
 
 def send_message_with_retry(update, context: CallbackContext, job_queue, chat_id, text, interval: int = 2,
                             count: int = 5):
+    # after the traffic is routed through the VPN the API gets confused
+    # the first message was always failing
+    # sending an empty message fixed it
+    # I am still leaving the retry logic just in case.
     try:
-        context.bot.send_message(chat_id=chat_id, text=text)
+        context.bot.send_message(chat_id=chat_id, text="", timeout=1)
+    except:
+        pass
+    try:
+        context.bot.send_message(chat_id=chat_id, text=text, timeout=20)
         print(f"Message \"{text}\" sent.")
     except:
         print(f"Retry sending message \"{text}\"\nRetries left: {count}")
@@ -200,6 +208,7 @@ def check_status(update, context: CallbackContext, job_queue, interval: int = 2,
                                         text="Connected!" + "\nLocal IP: " + str(ip[0]) + "\nPublic IP: " + str(ip[1]),
                                         interval=3,
                                         count=5)
+                return
             else:
                 print(f"Retry checking connection state... Retries left: {count}")
                 if count <= 0:
@@ -323,7 +332,7 @@ def error(update, context: CallbackContext):
 
 
 def main():
-    updater = Updater("<APIKEY>", use_context=True)
+    updater = Updater("<APIKET>", use_context=True)
     dp = updater.dispatcher
     j = updater.job_queue
 
