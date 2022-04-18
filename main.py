@@ -53,11 +53,13 @@ def validate_user(func: callable):
 
 
 def get_status():
-    return "CPU: {}%\nMemory: {}%\nUsed: {:.2f} MB\nAvailable: {:.2f} MB\nTotal: {:.2f} MB".format(psutil.cpu_percent(),
-                                                                                                   psutil.virtual_memory().percent,
-                                                                                                   psutil.virtual_memory().used / 1000000,
-                                                                                                   psutil.virtual_memory().free / 1000000,
-                                                                                                   psutil.virtual_memory().total / 1000000)
+    return "CPU: {}%\nMemory: {}%\nUsed: {:.2f} MB\nAvailable: {:.2f} MB\nFree: {:.2f} MB\nTotal: {:.2f} MB".format(
+        psutil.cpu_percent(),
+        psutil.virtual_memory().percent,
+        psutil.virtual_memory().used / 1000000,
+        psutil.virtual_memory().available / 1000000,
+        psutil.virtual_memory().free / 1000000,
+        psutil.virtual_memory().total / 1000000)
 
 
 def get_ip():
@@ -192,8 +194,11 @@ def check_status(update, context: CallbackContext, job_queue, interval: int = 2,
     if proc is not None:
         if proc.returncode is None:  # this means the process is still running
             output = open(processOutFilePath, "r").readlines()[-1]
-            if " ".join(output.split(" ")[-3:]) == "Initialization Sequence Completed1\n":
-                send_message_with_retry(update, context, job_queue, chat_id=chat_id, text="Connected!", interval=3,
+            if " ".join(output.split(" ")[-3:]) == "Initialization Sequence Completed\n":
+                ip = get_ip()
+                send_message_with_retry(update, context, job_queue, chat_id=chat_id,
+                                        text="Connected!" + "\nLocal IP: " + str(ip[0]) + "\nPublic IP: " + str(ip[1]),
+                                        interval=3,
                                         count=5)
             else:
                 print(f"Retry checking connection state... Retries left: {count}")
