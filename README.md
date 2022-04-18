@@ -12,7 +12,7 @@ This will make openvpn run as root by default
 
 The bot will respond only to commands coming from the specified user id
 
-'''
+```
 authorized_user_ids = [737689398]
 
 
@@ -25,4 +25,4 @@ def validate_user(func: callable):
             logger.error("User unauthorized!\nargs: " + str(update))
 
     return wrap
-'''
+```
