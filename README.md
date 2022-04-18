@@ -26,3 +26,17 @@ def validate_user(func: callable):
 
     return wrap
 ```
+
+
+Commands:
+
+/start /status /s           -> get current machine state
+/connect /c                 -> connect using default ovpn file
+/connect <filename>         -> connect specifying ovpn fle
+/disconnect /d              -> disconect
+/ip                         -> get current local and public ip
+/process /p                 -> get the status of process that runs openvpn client
+/getoutput /go              -> get the stdout file of the process
+/list /ls /l                -> list all .ovpn files on the dir, you can upload others as attachments
+/setdefault /sd <filename>  -> set default ovpn file
+/default /df                -> check default ovpn file
