@@ -1,0 +1,4 @@
+psutil==5.8.0
+python_telegram_bot==13.11
+requests==2.25.1
+telegram==0.0.1
