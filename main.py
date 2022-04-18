@@ -139,7 +139,7 @@ def connect(update, context: CallbackContext, job_queue):
                              context)
                 return
 
-    cmd.append(filename)
+    cmd.append(os.path.join(base_path, filename))
     send_message("Connecting using file {}".format(filename), update, context)
     print(cmd)
     kill_processes()
@@ -240,7 +240,7 @@ def disconnect(update, context: CallbackContext):
 
 
 def get_client_files():
-    return glob.glob('*.ovpn')
+    return [os.path.basename(s) for s in glob.glob(os.path.join(base_path, '*.ovpn'))]
 
 
 @validate_user
@@ -286,8 +286,8 @@ def set_default_file(update, context: CallbackContext):
         return
     if check_if_file_exists(filename):
         if re.search("\.ovpn$", filename):
-            open("default.txt", "w+").close()
-            open("default.txt", "w+").write(filename)
+            open(defaultFilePath, "w+").close()
+            open(defaultFilePath, "w+").write(filename)
             send_message("Successfully set {} as default file. Connect using /connect or /c".format(filename), update,
                          context)
         else:
@@ -301,7 +301,7 @@ def set_default_file(update, context: CallbackContext):
 def downloader(update, context: CallbackContext):
     filename_ = str(update.message.document.file_name)
     if re.search("\.ovpn$", filename_):
-        with open(filename_, 'wb+') as f:
+        with open(os.path.join(base_path, filename_), 'wb+') as f:
             context.bot.get_file(update.message.document).download(out=f)
         send_message("File uploaded successfully!", update, context)
     else:
