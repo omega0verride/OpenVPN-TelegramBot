@@ -45,13 +45,15 @@ Commands:
 /default /df                -> check default ovpn file
 ```
 
+---
+
 Example adding the script as a service and enabling it to start on boot.
 ```console
 cd /etc/systemd/system/
 sudo nano telegrambot.service
 ```
 
-Paste this config, change /path/to/script_folder/ and <user>
+Paste this config, change /path/to/script_folder/ and \<user\>
 
 ```bash
 [Unit]
