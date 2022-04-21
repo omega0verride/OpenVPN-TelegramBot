@@ -10,12 +10,14 @@
 
 import os
 import socket
+import time
 
 import json
 import logging
 import re
-import time
+from time import sleep
 
+import telegram.error
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, JobQueue
 import psutil
 import glob
@@ -332,7 +334,7 @@ def error(update, context: CallbackContext):
 
 
 def main():
-    updater = Updater("<APIKET>", use_context=True)
+    updater = Updater("<APIKEY>", use_context=True)
     dp = updater.dispatcher
     j = updater.job_queue
 
@@ -357,4 +359,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    while 1:
+        try:
+            main()
+        except telegram.error.NetworkError as e:
+            # cases when there is no internet connection and updater cannot be initialized
+            print(e)
+            sleep(4)  # wait 4 seconds since it is unnecessary to take that much cpu time to recheck for connection
