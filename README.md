@@ -67,6 +67,8 @@ WorkingDirectory=/path/to/script_folder/
 ExecStart=/usr/bin/python3 /path/to/script_folder/main.py
 StandardOutput=file:/path/to/script_folder/log.log
 StandardError=file:/path/to/script_folder/err.log
+Wants=network-online.target
+After=network.target network-online.target
 [Install]
 WantedBy=multi-user.target
 ```
