@@ -58,7 +58,8 @@ Paste this config, change /path/to/script_folder/ and \<user\>
 ```bash
 [Unit]
 Description=Telegram Bot that controls OpenVPN service
-After=multi-user.target
+Wants=network-online.target
+After=network.target network-online.target
 [Service]
 Type=simple
 User=<user>
@@ -67,8 +68,6 @@ WorkingDirectory=/path/to/script_folder/
 ExecStart=/usr/bin/python3 /path/to/script_folder/main.py
 StandardOutput=file:/path/to/script_folder/log.log
 StandardError=file:/path/to/script_folder/err.log
-Wants=network-online.target
-After=network.target network-online.target
 [Install]
 WantedBy=multi-user.target
 ```
